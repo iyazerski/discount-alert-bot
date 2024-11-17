@@ -45,13 +45,14 @@ OPENAI_API_KEY=your_openai_api_key
 # db
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=dbname
+DB_NAME=discount_alert_bot
 DB_USERNAME=user
 DB_PASSWORD=password
 
 # broker
 BROKER_HOST=localhost
 BROKER_PORT=5672
+BROKER_VHOST=discount_alert_bot
 BROKER_USERNAME=user
 BROKER_PASSWORD=password
 ```
@@ -65,9 +66,8 @@ docker compose up --build
 This command will set up the following containers:
 - discount-alert-bot-interface
 - discount-alert-bot-engine
-- discount-alert-bot-rabbitmq
-- discount-alert-bot-postgres
-- discount-alert-bot-celery-worker
+- discount-alert-bot-broker
+- discount-alert-bot-db
 
 ### Local Development
 
