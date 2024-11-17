@@ -1,17 +1,17 @@
 import typing as t
 
-from pydantic import Field, SecretStr
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings
 from sqlalchemy.engine.url import URL
 
 
 class DBSettings(BaseSettings):
-    db_username: SecretStr = Field(..., validation_alias="DB_USERNAME")
-    db_password: SecretStr = Field(..., validation_alias="DB_PASSWORD")
-    db_name: str = Field(..., validation_alias="DB_NAME")
-    db_driver: str = Field("postgresql+psycopg2", validation_alias="DB_DRIVER")
-    db_host: str = Field(..., validation_alias="DB_HOST")
-    db_port: int = Field(..., validation_alias="DB_PORT")
+    DB_USERNAME: SecretStr
+    DB_PASSWORD: SecretStr
+    DB_NAME: str
+    DB_DRIVER: str = "postgresql+psycopg2"
+    DB_HOST: str
+    DB_PORT: int
 
     @property
     def db_dsn(self) -> URL:
@@ -20,12 +20,12 @@ class DBSettings(BaseSettings):
         """
 
         return URL.create(
-            drivername=self.db_driver,
-            host=self.db_host,
-            port=self.db_port,
-            username=self.db_username.get_secret_value(),
-            password=self.db_password.get_secret_value(),
-            database=self.db_name,
+            drivername=self.DB_DRIVER,
+            host=self.DB_HOST,
+            port=self.DB_PORT,
+            username=self.DB_USERNAME.get_secret_value(),
+            password=self.DB_PASSWORD.get_secret_value(),
+            database=self.DB_NAME,
         )
 
     @property
