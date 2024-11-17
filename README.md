@@ -1,0 +1,1 @@
+# discount-alert-bot
