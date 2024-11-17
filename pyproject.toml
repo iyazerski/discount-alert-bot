@@ -26,6 +26,8 @@ isort = "^5.13.2"
 
 [tool.poetry.group.bot_interface.dependencies]
 fastapi = "^0.115.5"
+uvicorn = {extras = ["standard"], version = "^0.32.0"}
+python-telegram-bot = "^21.7"
 
 [tool.poetry.group.bot_engine.dependencies]
 

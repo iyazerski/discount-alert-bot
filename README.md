@@ -39,7 +39,7 @@ Create a `.env` in the root directory with the following variables:
 ```text
 # api keys
 BOT_INTERFACE_API_KEY=your_bot_interface_api_key
-TELEGRAM_API_KEY=your_telegram_api_key
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token
 OPENAI_API_KEY=your_openai_api_key
 
 # db
