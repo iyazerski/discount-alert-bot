@@ -67,7 +67,7 @@ BROKER_USERNAME=user
 BROKER_PASSWORD=password
 ```
 
-#### Build and Run with Docker Compose
+### Build and Run with Docker Compose
 
 ```shell
 docker compose up --build
@@ -79,6 +79,28 @@ This command will set up the following containers:
 - discount-alert-bot-rabbitmq
 - discount-alert-bot-postgres
 - discount-alert-bot-celery-worker
+
+### Local Development
+
+Create a virtual environment first:
+
+```shell
+python3 -m venv venv
+source venv/bin/activate
+```
+
+Install dependencies via `poetry` for local development:
+
+```shell
+pip install poetry
+poetry install
+```
+
+Install `pre-commit` hooks:
+
+```shell
+pre-commit install
+```
 
 ## Usage
 
