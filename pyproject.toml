@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "discount-alert-bot"
+version = "0.1.0"
+description = "Telegram chatbot that notifies users about discounts on products from their wish lists."
+authors = ["Ihar Yazerski"]
+readme = "README.md"
+license = "MIT"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.7.4"
+ipython = "^8.29.0"
+pre-commit = "^4.0.1"
+
+[tool.poetry.group.bot_interface.dependencies]
+fastapi = "^0.115.5"
+
+[tool.poetry.group.bot_engine.dependencies]
+sqlalchemy = "^2.0.36"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
