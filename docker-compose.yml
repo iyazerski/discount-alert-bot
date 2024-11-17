@@ -1,0 +1,58 @@
+services:
+  interface:
+    build:
+      context: .
+      dockerfile: ./deploy/bot_interface/Dockerfile
+    container_name: discount-alert-bot-interface
+    depends_on:
+      - broker
+      - db
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    restart: always
+
+  engine:
+    build:
+      context: .
+      dockerfile: ./deploy/bot_engine/Dockerfile
+    container_name: discount-alert-bot-engine
+    command: celery -A app worker --loglevel=info
+    depends_on:
+      - broker
+      - db
+    env_file:
+      - .env
+    restart: always
+
+  broker:
+    build: ./deploy/broker
+    container_name: discount-alert-bot-broker
+    environment:
+      RABBITMQ_DEFAULT_USER: ${BROKER_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${BROKER_PASSWORD}
+      RABBITMQ_DEFAULT_VHOST: ${BROKER_VHOST}
+    ports:
+      - "${BROKER_PORT}:5672"
+      - "1${BROKER_PORT}:15672"
+    volumes:
+      - discount-alert-bot-broker-data:/var/lib/rabbitmq
+    restart: always
+
+  db:
+    image: postgres:14
+    container_name: discount-alert-bot-db
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - discount-alert-bot-db-data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  discount-alert-bot-broker-data:
+  discount-alert-bot-db-data:
