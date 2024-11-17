@@ -14,4 +14,4 @@ class User(base.Base, mixin.CreatedMixin):
     id: Mapped[int] = mapped_column(primary_key=True)
     telegram_id: Mapped[str] = mapped_column(unique=True, index=True)
 
-    products: Mapped[list["Product"]] = relationship(back_populates="user", cascade="all, delete-orphans")
+    products: Mapped[list["Product"]] = relationship(back_populates="user")

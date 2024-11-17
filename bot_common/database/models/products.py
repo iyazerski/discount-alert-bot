@@ -20,5 +20,5 @@ class Product(base.Base, mixin.CreatedMixin):
     last_price: Mapped[float | None]
     last_checked_at: Mapped[dt.datetime | None]
 
-    user_id: Mapped[int] = mapped_column(sa.ForeignKey("users.id"))
+    user_id: Mapped[int] = mapped_column(sa.ForeignKey("users.id", ondelete="CASCADE"))
     user: Mapped["User"] = relationship(back_populates="products")
