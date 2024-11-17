@@ -42,6 +42,9 @@ BOT_INTERFACE_API_KEY=your_bot_interface_api_key
 TELEGRAM_BOT_TOKEN=your_telegram_bot_token
 OPENAI_API_KEY=your_openai_api_key
 
+# bot_interface
+BOT_INTERFACE_PORT=8089
+
 # db
 DB_HOST=localhost
 DB_PORT=5432

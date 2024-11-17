@@ -1,12 +1,11 @@
 import typing as t
 from contextlib import contextmanager
 
-from loguru import logger
-
 import sqlalchemy as sa
+from loguru import logger
 from sqlalchemy.engine import URL
 from sqlalchemy.exc import PendingRollbackError
-from sqlalchemy.orm import scoped_session, sessionmaker, Session
+from sqlalchemy.orm import Session, scoped_session, sessionmaker
 
 
 class Database:
@@ -61,8 +60,7 @@ class Database:
         try:
             return self.execute(sa.select(1))
         except Exception as exc:
-            error_message = f"Failed to connect to DB at {self._host}: {exc}"
-        raise RuntimeError(error_message)
+            raise RuntimeError(f"Failed to connect to DB at {self._host}: {exc}") from None
 
     def execute(
         self, query: sa.Select | sa.Insert | sa.Update | sa.Delete, scalars: bool = True
