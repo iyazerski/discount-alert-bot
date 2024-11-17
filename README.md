@@ -33,30 +33,19 @@ cd discount-alert-bot
 
 ### Configure Environment Variables
 
-Create a `.env` file in both the `bot-interface` and `bot-engine` directories with the following variables:
+Create a `.env` in the root directory with the following variables:
 
-**bot_interface/.env**
+**.env**
 ```text
 # api keys
 BOT_INTERFACE_API_KEY=your_bot_interface_api_key
 TELEGRAM_API_KEY=your_telegram_api_key
-
-# broker
-BROKER_HOST=localhost
-BROKER_PORT=5672
-BROKER_USERNAME=user
-BROKER_PASSWORD=password
-```
-
-**bot_engine/.env**
-```text
-# api keys
-BOT_INTERFACE_API_KEY=your_bot_interface_api_key
 OPENAI_API_KEY=your_openai_api_key
 
 # db
 DB_HOST=localhost
-DB_PORT=27017
+DB_PORT=5432
+DB_NAME=dbname
 DB_USERNAME=user
 DB_PASSWORD=password
 
