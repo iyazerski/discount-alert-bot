@@ -14,16 +14,16 @@ async def start(update, _: ContextTypes.DEFAULT_TYPE) -> None:
         "Add a product link and specify the discount percentage, and I'll notify you when the price drops by that amount or more\\.\n\n"
         "📌 *How to use me:*\n"
         "1️⃣ *Add a product to your watch list:*\n"
-        "`/add <link> <percentage>`\n"
+        "`/add <product link> <discount percentage>`\n"
         "Example: `/add https://www.example.com/product 15`\n\n"
         "2️⃣ *View your watch list:*\n"
         "`/list`\n\n"
         "3️⃣ *Remove a product from your list:*\n"
-        "`/remove <product ID>`\n"
-        "Example: `/remove 1`\n\n"
+        "`/remove <product link>`\n"
+        "Example: `/remove https://www.example.com/product`\n\n"
         "4️⃣ *Update the discount percentage for a product:*\n"
-        "`/update <product ID> <new percentage>`\n"
-        "Example: `/update 1 20`\n\n"
+        "`/update <product link> <new discount percentage>`\n"
+        "Example: `/update https://www.example.com/product 20`\n\n"
         "I'll check the prices daily at 12:00 PM and notify you of any discounts\\. 🛍️💰\n\n"
         "Happy savings\\! If you need help, just type `/help`\\."
     )
@@ -35,12 +35,16 @@ async def add(update, context: ContextTypes.DEFAULT_TYPE) -> None:
         # Parse and validate arguments
         if not context.args or len(context.args) < 2:
             raise ValueError("Not enough arguments")
-        model = schemas.AddProductModel(url=context.args[0], discount=context.args[1])
+        model = schemas.AddProductModel(product_link=context.args[0], discount=context.args[1])
         user_id = update.effective_user.id
 
         # Send task to Celery
         broker.send(
-            task_data={"user_id": user_id, "link": str(model.url), "notification_threshold": model.discount},
+            task_data={
+                "user_telegram_id": user_id,
+                "product_link": str(model.product_link),
+                "notification_threshold": model.discount,
+            },
             queue="live",
             task_name="add_product",
         )
@@ -50,7 +54,7 @@ async def add(update, context: ContextTypes.DEFAULT_TYPE) -> None:
         error_message = utils.extract_error_message(e)
         await update.message.reply_markdown_v2(
             f"*Invalid command format:*\n{error_message}\n"
-            "_Use:_ `/add <link> <percentage>`\n"
+            "_Use:_ `/add <product link> <discount percentage>`\n"
             "_Example:_ `/add https://www.example.com/product 15`"
         )
 
@@ -59,7 +63,7 @@ async def list_products(update, _: ContextTypes.DEFAULT_TYPE) -> None:
     user_id = update.effective_user.id
 
     with db.connect():
-        products = db.execute(
+        products: list[models.Product] = db.execute(
             sa.select(models.Product)
             .where(models.Product.user_id == user_id)
             .order_by(models.Product.created_at.desc())
@@ -68,7 +72,7 @@ async def list_products(update, _: ContextTypes.DEFAULT_TYPE) -> None:
     if products:
         response = "📝 *Your Watch List:*\n"
         for idx, product in enumerate(products, 1):
-            response += f"{idx}. {product['url']} - {product['discount']}%\n"
+            response += f"{idx}. {product.link} - {product.notification_threshold}%\n"
         await update.message.reply_markdown_v2(response)
     else:
         await update.message.reply_text("Your watch list is empty")
@@ -79,19 +83,22 @@ async def remove(update, context: ContextTypes.DEFAULT_TYPE):
         # Parse and validate arguments
         if not context.args:
             raise ValueError("Not enough arguments")
-        model = schemas.RemoveProductModel(product_id=context.args[0])
+        model = schemas.RemoveProductModel(product_link=context.args[0])
         user_id = update.effective_user.id
 
         # Send task to remove product
         broker.send(
-            task_data={"user_id": user_id, "product_id": model.product_id}, queue="live", task_name="remove_product"
+            task_data={"user_telegram_id": user_id, "product_link": str(model.product_link)},
+            queue="live",
+            task_name="remove_product",
         )
 
         await update.message.reply_text("Product removed from your list")
     except (ValidationError, ValueError) as e:
         error_message = utils.extract_error_message(e)
         await update.message.reply_markdown_v2(
-            f"*Invalid command format:*\n{error_message}\n" "_Use:_ `/remove <product ID>`\n" "_Example:_ `/remove 2`"
+            f"*Invalid command format:*\n{error_message}\n"
+            "_Use:_ `/remove <product link>`\n_Example:_ `/remove https://www.example.com/product`"
         )
 
 
@@ -100,12 +107,16 @@ async def update_product(update, context: ContextTypes.DEFAULT_TYPE):
         # Parse and validate arguments
         if not context.args or len(context.args) < 2:
             raise ValueError("Not enough arguments")
-        model = schemas.UpdateProductModel(product_id=context.args[0], discount=context.args[1])
+        model = schemas.AddProductModel(product_link=context.args[0], discount=context.args[1])
         user_id = update.effective_user.id
 
         # Send task to update discount threshold
         broker.send(
-            task_data={"user_id": user_id, "product_id": model.product_id, "notification_threshold": model.discount},
+            task_data={
+                "user_telegram_id": user_id,
+                "product_link": str(model.product_link),
+                "notification_threshold": model.discount,
+            },
             queue="live",
             task_name="update_product",
         )
@@ -115,6 +126,6 @@ async def update_product(update, context: ContextTypes.DEFAULT_TYPE):
         error_message = utils.extract_error_message(e)
         await update.message.reply_markdown_v2(
             f"*Invalid command format:*\n{error_message}\n"
-            "_Use:_ `/update <product ID> <new discount percentage>`\n"
-            "_Example:_ `/update 2 25`"
+            "_Use:_ `/update <product link> <new discount percentage>`\n"
+            "_Example:_ `/update https://www.example.com/product 25`"
         )
