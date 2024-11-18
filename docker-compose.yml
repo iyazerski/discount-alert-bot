@@ -5,10 +5,19 @@ services:
       dockerfile: ./deploy/bot_interface/Dockerfile
     container_name: discount-alert-bot-interface
     depends_on:
-      - broker
-      - db
+      broker:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+      migrator:
+        condition: service_completed_successfully
     env_file:
       - .env
+    environment:
+      BROKER_HOST: discount-alert-bot-broker
+      BROKER_PORT: 5672
+      DB_HOST: discount-alert-bot-db
+      DB_PORT: 5432
     restart: always
 
   engine:
@@ -18,11 +27,38 @@ services:
     container_name: discount-alert-bot-engine
     command: celery -A app worker --loglevel=info
     depends_on:
-      - broker
-      - db
+      broker:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+      migrator:
+        condition: service_completed_successfully
     env_file:
       - .env
+    environment:
+      BROKER_HOST: discount-alert-bot-broker
+      BROKER_PORT: 5672
+      DB_HOST: discount-alert-bot-db
+      DB_PORT: 5432
     restart: always
+
+  migrator:
+    build:
+      context: .
+      dockerfile: ./deploy/migrator/Dockerfile
+    container_name: discount-alert-bot-migrator
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      BROKER_HOST: discount-alert-bot-broker
+      BROKER_PORT: 5672
+      DB_HOST: discount-alert-bot-db
+      DB_PORT: 5432
+    restart: "no"
+    command: ["upgrade", "head"]
 
   broker:
     build: ./deploy/broker
@@ -36,6 +72,11 @@ services:
       - "1${BROKER_PORT}:15672"
     volumes:
       - discount-alert-bot-broker-data:/var/lib/rabbitmq
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 3s
+      timeout: 5s
+      retries: 5
     restart: always
 
   db:
@@ -49,6 +90,11 @@ services:
       - "${DB_PORT}:5432"
     volumes:
       - discount-alert-bot-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}" ]
+      interval: 3s
+      timeout: 5s
+      retries: 5
     restart: always
 
 volumes:

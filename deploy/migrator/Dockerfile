@@ -20,13 +20,13 @@ USER $PROJECT_USER
 
 # install requirements
 COPY --chown=$PROJECT_USER:$PROJECT_USER pyproject.toml ./
-RUN poetry install --with bot_interface --without bot_engine,dev --no-interaction
+RUN poetry install --only main --no-interaction
 ENV PATH="$PROJECT_PATH/.venv/bin:$PATH"
 
 # copy project files
-COPY --chown=$PROJECT_USER:$PROJECT_USER LICENSE ./
+COPY --chown=$PROJECT_USER:$PROJECT_USER LICENSE alembic.ini ./
 COPY --chown=$PROJECT_USER:$PROJECT_USER bot_common bot_common
-COPY --chown=$PROJECT_USER:$PROJECT_USER bot_interface bot_interface
+COPY --chown=$PROJECT_USER:$PROJECT_USER migrations migrations
 
 # Start the application
-CMD ["uvicorn", "bot_interface.app:app", "--host", "0.0.0.0", "--port", "8000"]
+ENTRYPOINT ["alembic"]
