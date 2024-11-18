@@ -64,18 +64,20 @@ async def list_products(update, _: ContextTypes.DEFAULT_TYPE) -> None:
 
     with db.connect():
         products: list[models.Product] = db.execute(
-            sa.select(models.Product)
-            .where(models.Product.user_id == user_id)
-            .order_by(models.Product.created_at.desc())
+            sa.select(models.Product).join(models.Product.user).where(models.User.telegram_id == user_id)
         ).all()
 
-    if products:
-        response = "📝 *Your Watch List:*\n"
-        for idx, product in enumerate(products, 1):
-            response += f"{idx}. {product.link} - {product.notification_threshold}%\n"
-        await update.message.reply_markdown_v2(response)
-    else:
-        await update.message.reply_text("Your watch list is empty")
+        if products:
+            response = "<b>📝 Your Watch List:</b>\n\n"
+            for idx, product in enumerate(products, 1):
+                response += (
+                    f'{idx}. <a href="{product.link}">{product.link}</a>\n'
+                    f"initial price - <b>{product.initial_price}</b>, "
+                    f"waiting for <b>{product.notification_threshold}%</b> discount\n"
+                )
+            await update.message.reply_html(response)
+        else:
+            await update.message.reply_text("Your watch list is empty")
 
 
 async def remove(update, context: ContextTypes.DEFAULT_TYPE):

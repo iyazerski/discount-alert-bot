@@ -2,11 +2,11 @@ import sqlalchemy as sa
 
 from bot_common.database import models
 from bot_common.processors import db
-from bot_engine.app import app
+from bot_engine.app import app, price_checker
 
 
 @app.task(name="add_product")
-def add_product(user_telegram_id: str, product_link: str, notification_threshold: float):
+def add_product(user_telegram_id: int, product_link: str, notification_threshold: int):
     with db.connect():
         user_id = db.execute(sa.select(models.User.id).where(models.User.telegram_id == user_telegram_id)).first()
 
@@ -17,14 +17,14 @@ def add_product(user_telegram_id: str, product_link: str, notification_threshold
             sa.insert(models.Product).values(
                 link=product_link,
                 notification_threshold=notification_threshold,
-                initial_price=...,
+                initial_price=price_checker.check_price(product_link),
                 user_id=user_id,
             )
         )
 
 
 @app.task(name="remove_product")
-def remove_product(user_telegram_id: str, product_link: str):
+def remove_product(user_telegram_id: int, product_link: str):
     with db.connect():
         db.execute(
             sa.delete(models.Product)
@@ -34,7 +34,7 @@ def remove_product(user_telegram_id: str, product_link: str):
 
 
 @app.task(name="update_product")
-def update_product(user_telegram_id: str, product_link: str, notification_threshold: float):
+def update_product(user_telegram_id: int, product_link: str, notification_threshold: int):
     with db.connect():
         db.execute(
             sa.update(models.Product)

@@ -3,7 +3,7 @@ from pydantic import AnyUrl, BaseModel, field_validator
 
 class AddProductModel(BaseModel):
     product_link: AnyUrl
-    discount: float
+    discount: int
 
     @field_validator("discount")
     def discount_must_be_positive(cls, v):

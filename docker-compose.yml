@@ -25,6 +25,7 @@ services:
       context: .
       dockerfile: ./deploy/bot_engine/Dockerfile
     container_name: discount-alert-bot-engine
+    command: celery -A bot_engine.app worker -l info -Q live,scheduled -c ${BOT_ENGINE_WORKERS:-1} --beat
     depends_on: *depends_on
     env_file: *env_file
     environment: *environment
