@@ -14,7 +14,7 @@ class Product(base.Base, mixin.CreatedMixin):
     __tablename__ = "products"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    link: Mapped[str]
+    link: Mapped[str] = mapped_column(index=True)
     notification_threshold: Mapped[float]
     initial_price: Mapped[float]
     last_price: Mapped[float | None]
