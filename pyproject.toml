@@ -14,8 +14,8 @@ loguru = "^0.7.2"
 alembic = "^1.14.0"
 pydantic = "^2.9.2"
 pydantic-settings = "^2.6.1"
-psycopg2 = "^2.9.10"
 celery = "^5.4.0"
+psycopg2-binary = "^2.9.10"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.7.4"
@@ -30,6 +30,7 @@ uvicorn = {extras = ["standard"], version = "^0.32.0"}
 python-telegram-bot = "^21.7"
 
 [tool.poetry.group.bot_engine.dependencies]
+
 
 [build-system]
 requires = ["poetry-core"]
