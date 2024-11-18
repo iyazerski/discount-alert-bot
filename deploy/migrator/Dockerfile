@@ -20,7 +20,7 @@ USER $PROJECT_USER
 
 # install requirements
 COPY --chown=$PROJECT_USER:$PROJECT_USER pyproject.toml ./
-RUN poetry install --only main --no-interaction
+RUN poetry install --with migrator --without dev,bot_engine --no-interaction
 ENV PATH="$PROJECT_PATH/.venv/bin:$PATH"
 
 # copy project files

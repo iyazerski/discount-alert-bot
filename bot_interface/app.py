@@ -1,8 +1,7 @@
+from bot_common.processors import settings
 from bot_interface.bot import Bot
-from bot_interface.settings import BotInterfaceSettings
 
-settings = BotInterfaceSettings()  # noqa
-bot = Bot(bot_token=settings.TELEGRAM_BOT_TOKEN)
+bot = Bot(bot_token=settings.TELEGRAM_BOT_TOKEN.get_secret_value())
 
 
 if __name__ == "__main__":

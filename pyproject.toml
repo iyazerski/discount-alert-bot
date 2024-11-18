@@ -11,11 +11,11 @@ package-mode = false
 python = "^3.12"
 sqlalchemy = "^2.0.36"
 loguru = "^0.7.2"
-alembic = "^1.14.0"
 pydantic = "^2.9.2"
 pydantic-settings = "^2.6.1"
 celery = "^5.4.0"
 psycopg2-binary = "^2.9.10"
+python-telegram-bot = "^21.7"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.7.4"
@@ -24,10 +24,11 @@ pre-commit = "^4.0.1"
 mypy = "^1.13.0"
 isort = "^5.13.2"
 
-[tool.poetry.group.bot_interface.dependencies]
-python-telegram-bot = "^21.7"
+[tool.poetry.group.migrator.dependencies]
+alembic = "^1.14.0"
 
 [tool.poetry.group.bot_engine.dependencies]
+openai = "^1.54.4"
 
 
 [build-system]
