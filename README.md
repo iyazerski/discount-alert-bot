@@ -45,6 +45,9 @@ OPENAI_API_KEY=your_openai_api_key
 # bot_interface
 BOT_INTERFACE_PORT=8089
 
+# bot_engine
+BOT_ENGINE_WORKERS=4
+
 # db
 DB_HOST=localhost
 DB_PORT=5432
