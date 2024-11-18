@@ -29,4 +29,4 @@ COPY --chown=$PROJECT_USER:$PROJECT_USER bot_common bot_common
 COPY --chown=$PROJECT_USER:$PROJECT_USER bot_interface bot_interface
 
 # Start the application
-CMD ["uvicorn", "bot_interface.app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python3", "-m", "bot_interface"]

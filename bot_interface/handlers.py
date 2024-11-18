@@ -2,28 +2,28 @@ import sqlalchemy as sa
 from telegram.ext import ContextTypes
 
 from bot_common.database import models
-from bot_interface.processors import broker, db
+from bot_common.processors import broker, db
 
 
 async def start(update, _: ContextTypes.DEFAULT_TYPE) -> None:
     welcome_message = (
-        "Welcome to the *Discount Alert Bot*! 🎉\n\n"
-        "I help you track price drops on products you're interested in.\n"
-        "Add a product link and specify the discount percentage, and I'll notify you when the price drops by that amount or more.\n\n"
+        "Welcome to the *Discount Alert Bot*\\! 🎉\n\n"
+        "I'll help you track price drops on products you're interested in\\.\n"
+        "Add a product link and specify the discount percentage\\, and I'll notify you when the price drops by that amount or more\\.\n\n"
         "📌 *How to use me:*\n"
         "1️⃣ *Add a product to your watch list:*\n"
         "`/add <link> <percentage>`\n"
-        "Example: `/add https://www.example.com/product 15`\n\n"
+        "Example\\: `/add https://www.example.com/product 15`\n\n"
         "2️⃣ *View your watch list:*\n"
         "`/list`\n\n"
         "3️⃣ *Remove a product from your list:*\n"
         "`/remove <product ID>`\n"
-        "Example: `/remove 1`\n\n"
-        "4️⃣ *Update the discount percentage for a product:*\n"
+        "Example\\: `/remove 1`\n\n"
+        "4️⃣ *Update the discount percentage for a product\\:*\n"
         "`/update <product ID> <new percentage>`\n"
-        "Example: `/update 1 20`\n\n"
-        "I'll check the prices daily at 12:00 PM and notify you of any discounts. 🛍️💰\n\n"
-        "Happy savings! If you need help, just type `/help`."
+        "Example\\: `/update 1 20`\n\n"
+        "I'll check the prices daily at 12:00 PM and notify you of any discounts\\. 🛍️💰\n\n"
+        "Happy savings\\! If you need help\\, just type `/help`\\."
     )
     await update.message.reply_markdown_v2(welcome_message)
 
@@ -47,9 +47,9 @@ async def add(update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text("Product added to your watch list 🎉")
     except (IndexError, ValueError):
         await update.message.reply_markdown_v2(
-            "Invalid command format. Use:\n"
+            "Invalid command format\\. Use\\:\n"
             "`/add <link> <percentage>`\n"
-            "Example: `/add https://www.example.com/product 15`"
+            "Example\\: `/add https://www.example.com/product 15`"
         )
 
 
@@ -81,7 +81,7 @@ async def remove(update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Product removed from your list")
     except (IndexError, ValueError):
         await update.message.reply_markdown_v2(
-            "Invalid command format. Use:\n" "`/remove <product ID>`\n" "Example: `/remove 2`"
+            "Invalid command format\\. Use\\:\n`/remove <product ID>`\nExample\\: `/remove 2`"
         )
 
 
@@ -104,7 +104,7 @@ async def update_product(update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Discount percentage updated")
     except (IndexError, ValueError):
         await update.message.reply_markdown_v2(
-            "Invalid command format. Use:\n"
+            "Invalid command format\\. Use\\:\n"
             "`/update <product ID> <new discount percentage>`\n"
-            "Example: `/update 2 25`"
+            "Example\\: `/update 2 25`"
         )

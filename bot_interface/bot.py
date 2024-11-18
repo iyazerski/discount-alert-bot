@@ -1,23 +1,24 @@
+from loguru import logger
 from telegram.ext import Application, ApplicationBuilder, CommandHandler
+
+from bot_interface import handlers
 
 
 class Bot:
     def __init__(self, bot_token: str) -> None:
         self._app: Application = ApplicationBuilder().token(bot_token).build()
 
-    async def start(self) -> None:
-        await self._app.initialize()
-        await self._app.start()
+    def run(self) -> None:
+        logger.info("Telegram Bot started")
 
-    async def stop(self) -> None:
-        await self._app.stop()
-        await self._app.shutdown()
+        self.register_handlers()
+        self._app.run_polling()
 
     def register_handlers(self) -> None:
-        from bot_interface import handlers
-
         self._app.add_handler(CommandHandler("start", handlers.start))
         self._app.add_handler(CommandHandler("add", handlers.add))
         self._app.add_handler(CommandHandler("list", handlers.list_products))
         self._app.add_handler(CommandHandler("remove", handlers.remove))
         self._app.add_handler(CommandHandler("update", handlers.update_product))
+
+        logger.info("Successfully registered handlers for Telegram commands")
