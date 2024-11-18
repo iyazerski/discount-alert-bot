@@ -29,4 +29,16 @@ COPY --chown=$PROJECT_USER:$PROJECT_USER bot_common bot_common
 COPY --chown=$PROJECT_USER:$PROJECT_USER bot_engine bot_engine
 
 # Start the application
-CMD ["celery", "-A", "run:app", "worker", "-l", "info", "-Q", "live,scheduled", "-c", "${BOT_ENGINE_WORKERS:-1}"]
+CMD [
+    "celery",
+    "-A",
+    "bot_engine.app",
+    "worker",
+    "-l",
+    "info",
+    "-Q",
+    "live,scheduled",
+    "-c",
+    "${BOT_ENGINE_WORKERS:-1}",
+    "--beat"
+]
