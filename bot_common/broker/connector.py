@@ -6,8 +6,8 @@ class Broker:
     def __init__(self, dsn: str) -> None:
         self.app = Celery("discount-alert-bot", broker=dsn)
 
-    def include_tasks(self, include: list[str]) -> None:
-        self.app.conf.update(include=include)
+    def config(self, config_path: str) -> None:
+        self.app.config_from_object(config_path)
 
     def send(self, *, task_data: dict, task_name: str, queue: str) -> None:
         task = self.app.send_task(task_name, kwargs=task_data, queue=queue)

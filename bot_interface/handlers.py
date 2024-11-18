@@ -58,7 +58,12 @@ async def add(update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def list_products(update, _: ContextTypes.DEFAULT_TYPE) -> None:
     user_id = update.effective_user.id
 
-    products = db.execute(sa.select(models.Product).where(models.Product.user_id == user_id)).all()
+    with db.connect():
+        products = db.execute(
+            sa.select(models.Product)
+            .where(models.Product.user_id == user_id)
+            .order_by(models.Product.created_at.desc())
+        ).all()
 
     if products:
         response = "📝 *Your Watch List:*\n"
