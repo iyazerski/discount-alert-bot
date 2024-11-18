@@ -4,16 +4,16 @@ services:
       context: .
       dockerfile: ./deploy/bot_interface/Dockerfile
     container_name: discount-alert-bot-interface
-    depends_on:
+    depends_on: &depends_on
       broker:
         condition: service_healthy
       db:
         condition: service_healthy
       migrator:
         condition: service_completed_successfully
-    env_file:
+    env_file:  &env_file
       - .env
-    environment:
+    environment: &environment
       BROKER_HOST: discount-alert-bot-broker
       BROKER_PORT: 5672
       DB_HOST: discount-alert-bot-db
@@ -25,21 +25,9 @@ services:
       context: .
       dockerfile: ./deploy/bot_engine/Dockerfile
     container_name: discount-alert-bot-engine
-    command: celery -A app worker --loglevel=info
-    depends_on:
-      broker:
-        condition: service_healthy
-      db:
-        condition: service_healthy
-      migrator:
-        condition: service_completed_successfully
-    env_file:
-      - .env
-    environment:
-      BROKER_HOST: discount-alert-bot-broker
-      BROKER_PORT: 5672
-      DB_HOST: discount-alert-bot-db
-      DB_PORT: 5432
+    depends_on: *depends_on
+    env_file: *env_file
+    environment: *environment
     restart: always
 
   migrator:
@@ -50,13 +38,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    env_file:
-      - .env
-    environment:
-      BROKER_HOST: discount-alert-bot-broker
-      BROKER_PORT: 5672
-      DB_HOST: discount-alert-bot-db
-      DB_PORT: 5432
+    env_file: *env_file
+    environment: *environment
     restart: "no"
     command: ["upgrade", "head"]
 
